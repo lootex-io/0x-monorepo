@@ -246,7 +246,9 @@ contract MixinSignatureValidator is
             signature
         );
         // bytes4 0xb0671381
-        bytes32 magicValue = bytes32(bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)")));
+        bytes32 LEGACY_WALLET_MAGIC_VALUE = bytes32(bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)")));
+        // bytes4 0x1626ba7e
+        bytes32 EIP1654_MAGIC_VALUE = bytes32(bytes4(keccak256("isValidSignature(bytes32,bytes)")));
         assembly {
             // extcodesize added as an extra safety measure
             if iszero(extcodesize(walletAddress)) {
@@ -288,9 +290,16 @@ contract MixinSignatureValidator is
             }
             case 1 {
                 // Signature is valid if call did not revert and returned true
-                isValid := eq(
-                    and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000),
-                    and(magicValue, 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                let magicValue := and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                isValid := or(
+                    eq(
+                        magicValue,
+                        and(LEGACY_WALLET_MAGIC_VALUE, 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                    ),
+                    eq(
+                        magicValue,
+                        and(EIP1654_MAGIC_VALUE, 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                    )
                 )
             }
         }
