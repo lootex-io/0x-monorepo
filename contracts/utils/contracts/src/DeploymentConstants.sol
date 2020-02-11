@@ -54,6 +54,8 @@ contract DeploymentConstants {
     address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     /// @dev Mainnet address of the dYdX contract.
     address constant private DYDX_ADDRESS = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
+    /// @dev Mainnet address of the Curve contract.
+    address constant private CURVE_ADDRESS = 0x2e60CF74d81ac34eB21eEff58Db4D385920ef419;
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
@@ -143,5 +145,15 @@ contract DeploymentConstants {
         returns (address dydxAddress)
     {
         return DYDX_ADDRESS;
+    }
+
+    /// @dev An overridable way to retrieve the Curve contract address.
+    /// @return exchange The Curve exchange contract.
+    function _getCurveAddress()
+        internal
+        view
+        returns (address curveAddress)
+    {
+        return CURVE_ADDRESS;
     }
 }
